@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Keyboard-only focus ring — invisible for mouse users, visible for
+     keyboard users. The default Tailwind ring is too loud for a premium
+     feel, so we use a soft accent. */
+  :focus-visible {
+    outline: 2px solid theme("colors.accent.DEFAULT");
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  /* Native focus rings stay in place where elements rely on them. */
+
+  /* Respect users who prefer no motion. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Chat bubble Markdown. We style Markdown ourselves instead of pulling
+     in @tailwindcss/typography because the surface area is tiny and we
+     want full control over the dark theme. */
+  .md {
+    @apply text-sm leading-relaxed text-ink;
+  }
+  .md > * + * {
+    @apply mt-2;
+  }
+  .md p {
+    @apply my-1.5;
+  }
+  .md h1 {
+    @apply mt-3 text-lg font-semibold text-ink;
+  }
+  .md h2 {
+    @apply mt-3 text-base font-semibold text-ink;
+  }
+  .md h3 {
+    @apply mt-2 text-sm font-semibold text-ink;
+  }
+  .md ul {
+    @apply list-disc pl-5;
+  }
+  .md ol {
+    @apply list-decimal pl-5;
+  }
+  .md li + li {
+    @apply mt-1;
+  }
+  .md strong {
+    @apply font-semibold text-ink;
+  }
+  .md em {
+    @apply italic;
+  }
+  .md a {
+    @apply text-accent underline underline-offset-2 hover:text-accent-hover;
+  }
+  .md code {
+    @apply rounded bg-bg-panel px-1.5 py-0.5 font-mono text-[12px] text-accent;
+  }
+  .md pre {
+    @apply overflow-x-auto rounded-md border border-border bg-bg-panel px-3 py-2.5 text-[12.5px] leading-relaxed;
+  }
+  .md pre code {
+    @apply bg-transparent p-0 text-ink;
+  }
+  .md blockquote {
+    @apply border-l-2 border-border pl-3 italic text-ink-muted;
+  }
+  .md hr {
+    @apply my-3 border-border;
+  }
+}

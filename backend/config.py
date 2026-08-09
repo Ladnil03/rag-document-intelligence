@@ -1,59 +1,38 @@
-import os
-from dotenv import load_dotenv
+"""Backward-compat shim. The real module is ``app.core.config``.
 
-load_dotenv()
+Kept so callers like ``alembic/env.py`` and ``evaluation/evaluate.py``
+that pre-date the modular layout can keep doing ``import config``.
+"""
 
-# --- Database ---
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql+psycopg://postgres:postgres@localhost:5432/rag_db"
-)
+from app.core.config import *  # noqa: F401,F403
+from app.core import config as _config
 
-# Normalize postgresql:// to postgresql+psycopg://
-if DATABASE_URL.startswith("postgresql://"):
-    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
-
-# Strip schema query param if present
-if "?schema=" in DATABASE_URL:
-    DATABASE_URL = DATABASE_URL.split("?schema=")[0]
-
-# --- File Storage ---
-STORAGE_DIR = os.path.join(os.path.dirname(__file__), "storage")
-MAX_FILE_SIZE = 10 * 1024 * 1024   # 10 MB
-ALLOWED_EXTENSIONS = {".pdf", ".docx"}
-
-# --- Text Chunking ---
-CHUNK_SIZE: int = int(os.getenv("CHUNK_SIZE", "1000"))
-CHUNK_OVERLAP: int = int(os.getenv("CHUNK_OVERLAP", "200"))
-
-# --- Embedding Model ---
-# all-MiniLM-L6-v2: 384-dimensional, Apache-2.0, runs locally via
-# sentence-transformers after its first download to the local model cache.
-EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
-EMBEDDING_DIMENSIONS: int = int(os.getenv("EMBEDDING_DIMENSIONS", "384"))
-
-# --- ChromaDB ---
-CHROMA_PERSIST_DIRECTORY: str = os.getenv(
-    "CHROMA_PERSIST_DIRECTORY",
-    os.path.join(os.path.dirname(__file__), "chroma_data")
-)
-CHROMA_COLLECTION_NAME: str = os.getenv("CHROMA_COLLECTION_NAME", "document_chunks")
-
-# --- Retrieval / RAG ---
-TOP_K: int = int(os.getenv("TOP_K", "4"))
-# ChromaDB cosine distance is converted to similarity as ``1 - distance``.
-# Only chunks meeting this minimum similarity are used as LLM context.
-SIMILARITY_THRESHOLD: float = float(os.getenv("SIMILARITY_THRESHOLD", "0.35"))
-MAX_CONTEXT_LENGTH: int = int(os.getenv("MAX_CONTEXT_LENGTH", "6000"))
-
-if TOP_K < 1:
-    raise ValueError("TOP_K must be at least 1.")
-if not -1.0 <= SIMILARITY_THRESHOLD <= 1.0:
-    raise ValueError("SIMILARITY_THRESHOLD must be between -1 and 1.")
-if MAX_CONTEXT_LENGTH < 1:
-    raise ValueError("MAX_CONTEXT_LENGTH must be at least 1.")
-
-# --- LLM ---
-LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "openai").lower()
-LLM_MODEL: str = os.getenv("LLM_MODEL", "gpt-4.1-mini")
-OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY")
+# Re-export public attributes explicitly so static analysers see them.
+ENVIRONMENT = _config.ENVIRONMENT
+LOG_LEVEL = _config.LOG_LEVEL
+ALLOWED_ORIGINS = _config.ALLOWED_ORIGINS
+DATABASE_URL = _config.DATABASE_URL
+STORAGE_DIR = _config.STORAGE_DIR
+MAX_FILE_SIZE = _config.MAX_FILE_SIZE
+ALLOWED_EXTENSIONS = _config.ALLOWED_EXTENSIONS
+CHUNK_SIZE = _config.CHUNK_SIZE
+CHUNK_OVERLAP = _config.CHUNK_OVERLAP
+EMBEDDING_MODEL = _config.EMBEDDING_MODEL
+EMBEDDING_DIMENSIONS = _config.EMBEDDING_DIMENSIONS
+CHROMA_PERSIST_DIRECTORY = _config.CHROMA_PERSIST_DIRECTORY
+CHROMA_COLLECTION_NAME = _config.CHROMA_COLLECTION_NAME
+TOP_K = _config.TOP_K
+SIMILARITY_THRESHOLD = _config.SIMILARITY_THRESHOLD
+MAX_CONTEXT_LENGTH = _config.MAX_CONTEXT_LENGTH
+CHAT_HISTORY_MESSAGE_LIMIT = _config.CHAT_HISTORY_MESSAGE_LIMIT
+EVAL_TOP_K = _config.EVAL_TOP_K
+EVAL_DATASET_PATH = _config.EVAL_DATASET_PATH
+EVAL_OUTPUT_PATH = _config.EVAL_OUTPUT_PATH
+EVAL_USE_LLM_JUDGE = _config.EVAL_USE_LLM_JUDGE
+EVAL_LLM_JUDGE_MODEL = _config.EVAL_LLM_JUDGE_MODEL
+LLM_PROVIDER = _config.LLM_PROVIDER
+LLM_MODEL = _config.LLM_MODEL
+GROQ_API_KEY = _config.GROQ_API_KEY
+JWT_SECRET_KEY = _config.JWT_SECRET_KEY
+JWT_ALGORITHM = _config.JWT_ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = _config.ACCESS_TOKEN_EXPIRE_MINUTES

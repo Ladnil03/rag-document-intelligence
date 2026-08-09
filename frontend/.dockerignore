@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+.vite
+
+# env files
+.env
+.env.local
+.env.*.local
+
+# Vite log
+*.log

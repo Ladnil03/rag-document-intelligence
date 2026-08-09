@@ -1,0 +1,98 @@
+version: "3.8"
+
+services:
+  # ---------------------------------------------------------------------------
+  # Frontend (React, served by nginx)
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api
+    container_name: rag_frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - web
+    # No env vars on purpose: the API URL is baked into the static bundle
+    # at build time. The browser talks to the same origin, /api/* is
+    # proxied to the `web` service by nginx.
+
+  # ---------------------------------------------------------------------------
+  # FastAPI Backend Service
+  # ---------------------------------------------------------------------------
+  web:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rag_backend
+    restart: unless-stopped
+    expose:
+      - "8000"            # only reachable from the docker network now
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/rag_db
+      - CHROMA_PERSIST_DIRECTORY=/app/chroma_data
+      - CHROMA_COLLECTION_NAME=document_chunks
+      - EMBEDDING_MODEL=all-MiniLM-L6-v2
+      - EMBEDDING_DIMENSIONS=384
+      - CHUNK_SIZE=1000
+      - CHUNK_OVERLAP=200
+      - TOP_K=4
+      - SIMILARITY_THRESHOLD=0.35
+      - MAX_CONTEXT_LENGTH=6000
+      - CHAT_HISTORY_MESSAGE_LIMIT=10
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-replace_with_a_long_random_secret}
+      - JWT_ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=60
+      - LLM_PROVIDER=groq
+      - LLM_MODEL=llama-3.3-70b-versatile
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      # Browser origin only matters for local dev now; the docker stack
+      # talks to the backend via nginx at the same origin. We still keep
+      # the dev ports in case anyone runs the backend outside compose.
+      - ALLOWED_ORIGINS=http://localhost:8080,http://127.0.0.1:8080,http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173
+    volumes:
+      - chroma_data:/app/chroma_data
+      - storage_data:/app/storage
+      - evaluation_reports:/app/evaluation/reports
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Database Service
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    container_name: rag_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=rag_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d rag_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+# ---------------------------------------------------------------------------
+# Named Volumes for Data Persistence
+# ---------------------------------------------------------------------------
+volumes:
+  postgres_data:
+    driver: local
+  chroma_data:
+    driver: local
+  storage_data:
+    driver: local
+  evaluation_reports:
+    driver: local

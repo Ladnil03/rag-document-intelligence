@@ -1,0 +1,159 @@
+{
+  "dataset_version": "1.1",
+  "source_documents": [
+    "rag-guide.pdf",
+    "machine-learning.pdf"
+  ],
+  "authoring_note": "Evaluation benchmark dataset mapped to real project documents (rag-guide.pdf and machine-learning.pdf). Each example includes an explicit category (direct_factual, multi_step, contextual, unanswerable, ambiguous), expected document sources, reference answer keywords/phrases, and expected ground-truth answers for deterministic and LLM-as-a-Judge scoring.",
+  "examples": [
+    {
+      "id": "rag-definition",
+      "type": "direct_factual",
+      "question": "What does the RAG guide say RAG combines?",
+      "answerable": true,
+      "expected_sources": [
+        {
+          "filename": "rag-guide.pdf"
+        }
+      ],
+      "expected_answer_terms": [
+        "retrieval",
+        "generation"
+      ],
+      "reference_answer": "RAG (Retrieval-Augmented Generation) combines retrieval of relevant document passages with text generation using an LLM to produce grounded answers."
+    },
+    {
+      "id": "ml-supervised-learning",
+      "type": "direct_factual",
+      "question": "What is supervised learning according to the machine learning overview?",
+      "answerable": true,
+      "expected_sources": [
+        {
+          "filename": "machine-learning.pdf"
+        }
+      ],
+      "expected_answer_terms": [
+        "labeled",
+        "data"
+      ],
+      "reference_answer": "Supervised learning is a machine learning paradigm where models are trained using labeled datasets containing input features and corresponding target outputs."
+    },
+    {
+      "id": "rag-vector-db",
+      "type": "direct_factual",
+      "question": "What is the purpose of ChromaDB in the RAG pipeline?",
+      "answerable": true,
+      "expected_sources": [
+        {
+          "filename": "rag-guide.pdf"
+        }
+      ],
+      "expected_answer_terms": [
+        "vector",
+        "store"
+      ],
+      "reference_answer": "ChromaDB serves as the vector store to persist and query high-dimensional embeddings of document text chunks for semantic similarity search."
+    },
+    {
+      "id": "rag-pipeline-flow",
+      "type": "multi_step",
+      "question": "How do document chunking, embeddings, and vector retrieval work together before an LLM generates a response?",
+      "answerable": true,
+      "expected_sources": [
+        {
+          "filename": "rag-guide.pdf"
+        }
+      ],
+      "expected_answer_terms": [
+        "chunk",
+        "embedding",
+        "retriev"
+      ],
+      "reference_answer": "Documents are split into smaller text chunks, converted into vector embeddings using an embedding model, and stored in a vector database. At query time, the user prompt is embedded to retrieve the most semantically similar chunks, which are then passed as context to the LLM."
+    },
+    {
+      "id": "ml-model-training-eval",
+      "type": "multi_step",
+      "question": "How are model parameters updated during training and how is performance evaluated on validation data?",
+      "answerable": true,
+      "expected_sources": [
+        {
+          "filename": "machine-learning.pdf"
+        }
+      ],
+      "expected_answer_terms": [
+        "train",
+        "evaluat"
+      ],
+      "reference_answer": "During training, model weights and parameters are updated by minimizing a loss function via optimization algorithms. Evaluation measures how well the trained model generalizes to unseen validation or test datasets."
+    },
+    {
+      "id": "rag-embeddings-purpose",
+      "type": "contextual",
+      "question": "Why are semantic embeddings preferred over simple keyword search when retrieving context for RAG?",
+      "answerable": true,
+      "expected_sources": [
+        {
+          "filename": "rag-guide.pdf"
+        }
+      ],
+      "expected_answer_terms": [
+        "semantic",
+        "similar"
+      ],
+      "reference_answer": "Semantic embeddings capture contextual meaning and intent in a continuous vector space, allowing retrieval of relevant chunks even when queries use different wording or synonyms than the source document."
+    },
+    {
+      "id": "ml-overfitting-generalization",
+      "type": "contextual",
+      "question": "How does overfitting affect model performance on unseen data?",
+      "answerable": true,
+      "expected_sources": [
+        {
+          "filename": "machine-learning.pdf"
+        }
+      ],
+      "expected_answer_terms": [
+        "overfit",
+        "generaliz"
+      ],
+      "reference_answer": "Overfitting occurs when a model learns training data noise and specific details too closely, leading to poor generalization performance on unseen test data."
+    },
+    {
+      "id": "ambiguous-model-role",
+      "type": "ambiguous",
+      "question": "What roles do models play across both retrieval and generation?",
+      "answerable": true,
+      "expected_sources": [
+        {
+          "filename": "rag-guide.pdf"
+        },
+        {
+          "filename": "machine-learning.pdf"
+        }
+      ],
+      "expected_answer_terms": [
+        "model"
+      ],
+      "reference_answer": "Embedding models encode text into vector representations for retrieval, while generative language models (LLMs) synthesize natural language answers from retrieved context."
+    },
+    {
+      "id": "unanswerable-kubernetes-config",
+      "type": "unanswerable",
+      "question": "What Kubernetes deployment configuration, replica count, and Helm charts do these documents prescribe?",
+      "answerable": false,
+      "expected_sources": [],
+      "expected_answer_terms": [],
+      "reference_answer": "The available documents do not contain information about Kubernetes deployment configurations, replica counts, or Helm charts."
+    },
+    {
+      "id": "unanswerable-stock-prices",
+      "type": "unanswerable",
+      "question": "What were the quarterly revenue numbers and stock ticker performance for Apple Inc in 2025?",
+      "answerable": false,
+      "expected_sources": [],
+      "expected_answer_terms": [],
+      "reference_answer": "The provided documents do not mention Apple Inc's financial results, revenue numbers, or stock market performance."
+    }
+  ]
+}

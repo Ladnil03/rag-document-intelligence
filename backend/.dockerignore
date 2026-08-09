@@ -1,0 +1,30 @@
+# Virtual environment
+env/
+venv/
+ENV/
+
+# Git
+.git/
+.gitignore
+
+# Environment & Secrets
+.env
+.env.local
+
+# Python caches & artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local data & database files
+test.db
+storage/*
+!storage/.gitkeep
+chroma_data/*
+!chroma_data/.gitkeep
+evaluation/reports/*
+!evaluation/reports/.gitkeep
