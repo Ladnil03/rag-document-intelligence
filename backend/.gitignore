@@ -1,0 +1,20 @@
+# Environment variables
+.env
+*.env
+
+# Python cache & virtual environment
+__pycache__/
+*.py[cod]
+env/
+venv/
+
+# Test databases
+*.db
+.pytest_cache/
+
+# Storage directory contents (keep .gitkeep)
+storage/*
+!storage/.gitkeep
+
+# Persistent local vector database (recreated by ingestion)
+chroma_data/
